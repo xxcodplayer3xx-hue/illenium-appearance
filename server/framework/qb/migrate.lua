@@ -17,7 +17,7 @@ local function MigrateFivemAppearance(source)
     for i=1, #playerSkins, 1 do
         Database.PlayerSkins.Add(playerSkins[i].citizenID, json.decode(playerSkins[i].skin).model, playerSkins[i].skin, 1)
     end
-    lib.notify(source, {
+    TriggerClientEvent("illenium-appearance:client:customNotify", source, {
         title = _L("migrate.success.title"),
         description = string.format(_L("migrate.success.description"), tostring(#playerSkins)),
         type = "success",
@@ -30,7 +30,7 @@ local function MigrateQBClothing(source)
     local migrated = 0
     for i=1, #allPlayerSkins, 1 do
         if not tonumber(allPlayerSkins[i].model) then
-            lib.notify(source, {
+            TriggerClientEvent("illenium-appearance:client:customNotify", source, {
                 title = _L("migrate.skip.title"),
                 description = _L("migrate.skip.description"),
                 type = "inform",
@@ -47,7 +47,7 @@ local function MigrateQBClothing(source)
     end
     TriggerClientEvent("illenium-appearance:client:reloadSkin", source)
 
-    lib.notify(source, {
+    TriggerClientEvent("illenium-appearance:client:customNotify", source, {
         title = _L("migrate.success.title"),
         description = string.format(_L("migrate.success.description"), tostring(migrated)),
         type = "success",
@@ -60,7 +60,7 @@ RegisterNetEvent("illenium-appearance:server:migrate-qb-clothing-skin", function
     Database.PlayerSkins.DeleteByCitizenID(citizenid)
     Database.PlayerSkins.Add(citizenid, appearance.model, json.encode(appearance), 1)
     continue = true
-    lib.notify(src, {
+    TriggerClientEvent("illenium-appearance:client:customNotify", src, {
         id = "illenium_appearance_skin_migrated",
         title = _L("migrate.success.title"),
         description = _L("migrate.success.descriptionSingle"),
@@ -87,7 +87,7 @@ lib.addCommand("migrateskins", {
             MigrateQBClothing(source)
         end)
     else
-        lib.notify(source, {
+        TriggerClientEvent("illenium-appearance:client:customNotify", source, {
             title = _L("migrate.typeError.title"),
             description = _L("migrate.typeError.description"),
             type = "error",

@@ -557,12 +557,12 @@ function client.startPlayerCustomization(cb, conf)
 
     if Config.HideRadar then DisplayRadar(false) end
 
-    SendNuiMessage(json.encode({
-        type = "appearance_display",
-        payload = {
+    SendNUIMessage({
+        action = "appearance_display",
+        data = {
             asynchronous = Config.AsynchronousLoading
         }
-    }))
+    })
 end
 
 function client.exitPlayerCustomization(appearance)
@@ -575,10 +575,10 @@ function client.exitPlayerCustomization(appearance)
     ClearPedTasksImmediately(cache.ped)
     SetEntityInvincible(cache.ped, false)
 
-    SendNuiMessage(json.encode({
-        type = "appearance_hide",
-        payload = {}
-    }))
+    SendNUIMessage({
+        action = "appearance_hide",
+        data = {}
+    })
 
     if not appearance then
         client.setPlayerAppearance(getAppearance())

@@ -1,17 +1,40 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/src/favicon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>UI</title>
-  <script type="module" crossorigin src="./assets/index.b8e72b46.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="tailwind.css">
+  <link rel="stylesheet" href="fonts.css">
+  <link rel="stylesheet" href="./custom-ui.css">
+  <title>Appearance</title>
 </head>
-
-<body>
-    <div id="root"></div>
-    
+<body class="bg-transparent text-white">
+  <div id="root"></div>
+  <div id="custom-ui-layer" class="pointer-events-none fixed inset-0 z-[9999] hidden font-sans">
+    <div id="custom-notifications" class="pointer-events-none fixed right-8 top-8 flex w-[22rem] flex-col gap-3"></div>
+    <div id="custom-text-ui" class="custom-ui-pulse pointer-events-none fixed bottom-10 left-1/2 hidden -translate-x-1/2">
+      <div class="flex items-center gap-3 rounded-2xl border border-cyan-200/30 bg-slate-950/95 px-4 py-3 shadow-2xl shadow-cyan-950/40 ring-1 ring-black/60">
+        <span class="flex h-8 w-8 items-center justify-center rounded-xl border border-cyan-100/30 bg-cyan-300/10 font-mono text-sm font-bold text-cyan-100">E</span>
+        <span id="custom-text-label" class="font-display text-xs font-semibold tracking-wide text-white/90"></span>
+      </div>
+    </div>
+    <section id="custom-context" class="custom-ui-enter pointer-events-auto absolute right-8 top-1/2 hidden w-[25rem] -translate-y-1/2 overflow-hidden rounded-3xl border border-white/10 bg-slate-950/95 shadow-2xl shadow-black/60 ring-1 ring-cyan-200/10">
+      <header class="border-b border-white/10 bg-white/[0.035] px-5 py-5">
+        <div class="flex items-start justify-between gap-4">
+          <div><p class="font-mono text-[10px] uppercase tracking-[0.22em] text-cyan-200/60">Appearance // control</p><h2 id="custom-context-title" class="mt-2 font-display text-lg font-semibold text-white"></h2><p id="custom-context-description" class="mt-1 font-sans text-xs text-white/45"></p></div>
+          <button id="custom-context-close" type="button" class="rounded-lg border border-white/10 px-2.5 py-1 text-xs text-white/50 transition hover:border-rose-200/40 hover:text-rose-100">Esc</button>
+        </div>
+      </header>
+      <div id="custom-context-options" class="max-h-[30rem] space-y-2 overflow-y-auto p-4"></div>
+      <footer class="flex items-center justify-between border-t border-white/10 px-5 py-3"><button id="custom-context-back" type="button" class="hidden font-mono text-[10px] uppercase tracking-[0.16em] text-cyan-200/70 transition hover:text-cyan-100">← Back</button><span class="ml-auto font-mono text-[10px] uppercase tracking-[0.16em] text-white/25">Select an operation</span></footer>
+    </section>
+    <section id="custom-dialog" class="custom-ui-enter pointer-events-auto absolute left-1/2 top-1/2 hidden w-[27rem] -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-3xl border border-white/10 bg-slate-950/95 shadow-2xl shadow-black/60 ring-1 ring-cyan-200/10">
+      <header class="border-b border-white/10 bg-white/[0.035] px-6 py-5"><p class="font-mono text-[10px] uppercase tracking-[0.22em] text-cyan-200/60">Appearance // input</p><h2 id="custom-dialog-title" class="mt-2 font-display text-lg font-semibold text-white"></h2></header>
+      <div id="custom-dialog-fields" class="space-y-4 p-6"></div>
+      <footer class="flex justify-end gap-2 border-t border-white/10 px-6 py-4"><button id="custom-dialog-cancel" type="button" class="rounded-xl border border-white/10 px-4 py-2.5 font-display text-xs font-semibold text-white/60 transition hover:border-white/25 hover:text-white">Cancel</button><button id="custom-dialog-submit" type="button" class="rounded-xl border border-cyan-200/40 bg-cyan-300/15 px-4 py-2.5 font-display text-xs font-semibold text-cyan-50 transition hover:bg-cyan-300/25">Continue</button></footer>
+    </section>
+  </div>
+  <script src="./custom-ui.js"></script>
+  <script src="./appearance.js"></script>
 </body>
-
 </html>

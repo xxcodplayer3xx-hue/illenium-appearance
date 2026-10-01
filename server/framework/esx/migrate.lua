@@ -147,7 +147,7 @@ lib.addCommand("migrateskins", { help = "Migrate skins", restricted = "group.adm
             end
         end
     end
-    lib.notify(source, {
+    TriggerClientEvent("illenium-appearance:client:customNotify", source, {
         title = _L("migrate.success.title"),
         description = string.format(_L("migrate.success.description"), tostring(convertedSkins)),
         type = "success",

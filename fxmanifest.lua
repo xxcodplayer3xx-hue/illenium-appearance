@@ -1,8 +1,8 @@
 fx_version "cerulean"
 game "gta5"
 
-author "snakewiz & iLLeniumStudios"
-description "A flexible player customization script for FiveM servers."
+author "SwisserAI"
+description "A flexible player customization script for FiveM servers. Generated with SwisserAI - https://ai.swisser.dev"
 repository "https://github.com/iLLeniumStudios/illenium-appearance"
 version "main"
 
@@ -13,6 +13,7 @@ client_scripts {
   "game/util.lua",
   "game/customization.lua",
   "game/nui.lua",
+  "client/ui.lua",
   "client/outfits.lua",
   "client/common.lua",
   "client/zones.lua",
@@ -90,7 +91,13 @@ shared_scripts {
 
 files {
   "web/dist/index.html",
-  "web/dist/assets/*.js"
+  "web/dist/assets/*.js",
+  "web/dist/custom-ui.css",
+  "web/dist/custom-ui.js",
+  "web/dist/appearance.js",
+  "web/dist/tailwind.css",
+  "web/dist/fonts/*.woff2",
+  "web/dist/fonts.css"
 }
 
 ui_page "web/dist/index.html"

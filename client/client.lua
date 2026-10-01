@@ -592,12 +592,12 @@ function OpenMenu(isPedMenu, menuType, menuData)
             event = "illenium-appearance:client:openClothingShop",
             args = isPedMenu
         }
-        for i = 0, #outfitMenuItems, 1 do
+        for i = 1, #outfitMenuItems, 1 do
             menuItems[#menuItems + 1] = outfitMenuItems[i]
         end
     elseif menuType == "outfit" then
         mainMenu.title = _L("clothing.outfits.title")
-        for i = 0, #outfitMenuItems, 1 do
+        for i = 1, #outfitMenuItems, 1 do
             menuItems[#menuItems + 1] = outfitMenuItems[i]
         end
     elseif menuType == "job-outfit" then

@@ -107,7 +107,7 @@ lib.callback.register("illenium-appearance:server:payForTattoo", function(source
     local cost = tattoo.cost or Config.TattooCost
 
     if Framework.RemoveMoney(src, "cash", cost) then
-        lib.notify(src, {
+        TriggerClientEvent("illenium-appearance:client:customNotify", src, {
             title = _L("purchase.tattoo.success.title"),
             description = string.format(_L("purchase.tattoo.success.description"), tattoo.label, cost),
             type = "success",
@@ -115,7 +115,7 @@ lib.callback.register("illenium-appearance:server:payForTattoo", function(source
         })
         return true
     else
-        lib.notify(src, {
+        TriggerClientEvent("illenium-appearance:client:customNotify", src, {
             title = _L("purchase.tattoo.failure.title"),
             description = _L("purchase.tattoo.failure.description"),
             type = "error",
@@ -174,14 +174,14 @@ RegisterServerEvent("illenium-appearance:server:chargeCustomer", function(shopTy
     local src = source
     local money = getMoneyForShop(shopType)
     if Framework.RemoveMoney(src, "cash", money) then
-        lib.notify(src, {
+        TriggerClientEvent("illenium-appearance:client:customNotify", src, {
             title = _L("purchase.store.success.title"),
             description = string.format(_L("purchase.store.success.description"), money, shopType),
             type = "success",
             position = Config.NotifyOptions.position
         })
     else
-        lib.notify(src, {
+        TriggerClientEvent("illenium-appearance:client:customNotify", src, {
             title = _L("purchase.store.failure.title"),
             description = _L("purchase.store.failure.description"),
             type = "error",
@@ -208,7 +208,7 @@ RegisterNetEvent("illenium-appearance:server:saveOutfit", function(name, model, 
             components = components,
             props = props
         }
-        lib.notify(src, {
+        TriggerClientEvent("illenium-appearance:client:customNotify", src, {
             title = _L("outfits.save.success.title"),
             description = string.format(_L("outfits.save.success.description"), name),
             type = "success",
@@ -236,7 +236,7 @@ RegisterNetEvent("illenium-appearance:server:updateOutfit", function(id, model, 
                 break
             end
         end
-        lib.notify(src, {
+        TriggerClientEvent("illenium-appearance:client:customNotify", src, {
             title = _L("outfits.update.success.title"),
             description = string.format(_L("outfits.update.success.description"), outfitName),
             type = "success",
@@ -252,7 +252,7 @@ RegisterNetEvent("illenium-appearance:server:saveManagementOutfit", function(out
         return
     end
 
-    lib.notify(src, {
+    TriggerClientEvent("illenium-appearance:client:customNotify", src, {
         title = _L("outfits.save.success.title"),
             description = string.format(_L("outfits.save.success.description"), outfitData.Name),
         type = "success",
@@ -320,7 +320,7 @@ if Config.EnablePedMenu then
             if citizenID then
                 target = args.playerID
             else
-                lib.notify(source, {
+                TriggerClientEvent("illenium-appearance:client:customNotify", source, {
                     title = _L("commands.pedmenu.failure.title"),
                     description = _L("commands.pedmenu.failure.description"),
                     type = "error",
