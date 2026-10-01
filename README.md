@@ -48,6 +48,34 @@ Discord: https://discord.illenium.dev
 - Persist Job / Gang Clothes on reconnects / logout
 - Themes Support (Default & QBCore provided out of the box)
 - Disable Components / Props Entirely (Clothing as items support)
+- Image-card clothing and accessory catalog with exact one-step texture controls
+- Configurable inventory-wearable clothing items
+
+## Clothing image cards and wearable items
+
+The custom appearance UI now displays component and prop styles as image cards instead of relying only on sliders. Add images to `web/images/clothing/` using these names:
+
+- `component_<componentId>_<drawable>_0.png`
+- `prop_<propId>_<drawable>_0.png`
+
+For custom paths, add an entry to `Config.ClothingItemImages` in `shared/config.lua` using a key such as `component:11:42:0`.
+
+To define a custom inventory clothing item, add it to `Config.ClothingItems` with `components`, `props`, and an image path. The server validates that the player owns the item before applying it. For ox_inventory, register the item in your inventory item definitions with `client = { export = "illenium-appearance.useClothingItem" }`; the export validates ownership through the server before applying the item. A client event pointing to `illenium-appearance:client:useClothingItem` is also supported. For QBCore or ESX, the resource registers configured items as usable automatically.
+
+Example:
+
+```lua
+Config.ClothingItems = {
+    ["custom_hoodie"] = {
+        label = "Custom Hoodie",
+        image = "../images/clothing/custom_hoodie.png",
+        components = {
+            { component_id = 11, drawable = 42, texture = 0 },
+        },
+        props = {}
+    }
+}
+```
 
 ## New Preview (with Tattoos)
 

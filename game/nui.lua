@@ -108,6 +108,44 @@ RegisterNUICallback("appearance_remove_clothes", function(clothes, cb)
     client.removeClothes(clothes)
 end)
 
+RegisterNUICallback("appearance_wear_clothing_item", function(data, cb)
+    local itemName = type(data) == "table" and data.item or data
+    local result = lib.callback.await("illenium-appearance:server:getClothingItem", false, itemName)
+    if not result or result.ok ~= true then
+        cb(result or { ok = false, error = "This clothing item is not configured." })
+        return
+    end
+
+    cb({
+        ok = true,
+        appearanceData = client.applyClothingItem(result.item)
+    })
+end)
+
+local function useClothingItem(itemName, approvedItem)
+    if type(itemName) == "table" then
+        itemName = itemName.name or itemName.item or itemName.itemName
+    end
+
+    local item = approvedItem
+    if not item then
+        local result = lib.callback.await("illenium-appearance:server:getClothingItem", false, itemName)
+        if not result or result.ok ~= true then
+            return false
+        end
+        item = result.item
+    end
+
+    client.applyClothingItem(item)
+    return true
+end
+
+RegisterNetEvent("illenium-appearance:client:useClothingItem", function(itemName, approvedItem)
+    useClothingItem(itemName, approvedItem)
+end)
+
+exports("useClothingItem", useClothingItem)
+
 RegisterNUICallback("appearance_save", function(appearance, cb)
     cb(1)
     client.wearClothes(appearance, "head")

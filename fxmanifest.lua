@@ -95,6 +95,8 @@ files {
   "web/dist/custom-ui.css",
   "web/dist/custom-ui.js",
   "web/dist/appearance.js",
+  "web/images/clothing/*",
+  "web/images/clothing/**/*",
   "web/dist/tailwind.css",
   "web/dist/fonts/*.woff2",
   "web/dist/fonts.css"

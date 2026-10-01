@@ -247,6 +247,80 @@ local function getHairSettings(ped)
 end
 client.getHairSettings = getHairSettings
 
+local function getCatalogImage(prefix, itemId, drawableId)
+    return string.format("%s/%s_%s_%s_0.png", Config.ClothingImagePath, prefix, itemId, drawableId)
+end
+
+local function getClothingCatalog(ped)
+    local catalog = {
+        components = {},
+        props = {},
+        items = {}
+    }
+
+    for i = 1, #constants.PED_COMPONENTS_IDS do
+        local componentId = constants.PED_COMPONENTS_IDS[i]
+        local drawableCount = GetNumberOfPedDrawableVariations(ped, componentId)
+        local componentItems = {}
+
+        for drawableId = 0, drawableCount - 1 do
+            componentItems[#componentItems + 1] = {
+                drawable = drawableId,
+                textureCount = GetNumberOfPedTextureVariations(ped, componentId, drawableId),
+                image = Config.ClothingItemImages[string.format("component:%s:%s:0", componentId, drawableId)] or getCatalogImage("component", componentId, drawableId),
+                label = string.format("Style %03d", drawableId)
+            }
+        end
+
+        catalog.components[#catalog.components + 1] = {
+            component_id = componentId,
+            items = componentItems
+        }
+    end
+
+    for i = 1, #constants.PED_PROPS_IDS do
+        local propId = constants.PED_PROPS_IDS[i]
+        local drawableCount = GetNumberOfPedPropDrawableVariations(ped, propId)
+        local propItems = {
+            {
+                drawable = -1,
+                textureCount = 0,
+                image = nil,
+                label = "Remove"
+            }
+        }
+
+        for drawableId = 0, drawableCount - 1 do
+            propItems[#propItems + 1] = {
+                drawable = drawableId,
+                textureCount = GetNumberOfPedPropTextureVariations(ped, propId, drawableId),
+                image = Config.ClothingItemImages[string.format("prop:%s:%s:0", propId, drawableId)] or getCatalogImage("prop", propId, drawableId),
+                label = string.format("Style %03d", drawableId)
+            }
+        end
+
+        catalog.props[#catalog.props + 1] = {
+            prop_id = propId,
+            items = propItems
+        }
+    end
+
+    for itemName, item in pairs(Config.ClothingItems or {}) do
+        if type(item) == "table" then
+            catalog.items[#catalog.items + 1] = {
+                item = itemName,
+                label = item.label or itemName,
+                description = item.description,
+                image = item.image,
+                components = item.components or {},
+                props = item.props or {}
+            }
+        end
+    end
+
+    return catalog
+end
+
 local function getAppearanceSettings()
     local ped = {
         model = {
@@ -373,7 +447,8 @@ local function getAppearanceSettings()
         headOverlays = headOverlays,
         hair = getHairSettings(cache.ped),
         eyeColor = eyeColor,
-        tattoos = tattoos
+        tattoos = tattoos,
+        clothing = getClothingCatalog(cache.ped)
     }
 end
 client.getAppearanceSettings = getAppearanceSettings
@@ -505,6 +580,35 @@ local function wearClothes(data, typeClothes)
     TaskPlayAnim(cache.ped, animationsOn.dict, animationsOn.anim, 3.0, 3.0, animationsOn.duration, animationsOn.move, 0, false, false, false)
 end
 client.wearClothes = wearClothes
+
+local function applyClothingItem(item)
+    for i = 1, #(item.components or {}) do
+        local component = item.components[i]
+        local componentId = tonumber(component.component_id)
+        local drawable = tonumber(component.drawable)
+        local texture = tonumber(component.texture) or 0
+        if componentId and drawable then
+            SetPedComponentVariation(cache.ped, componentId, drawable, texture, 2)
+        end
+    end
+
+    for i = 1, #(item.props or {}) do
+        local prop = item.props[i]
+        local propId = tonumber(prop.prop_id)
+        local drawable = tonumber(prop.drawable)
+        local texture = tonumber(prop.texture) or 0
+        if propId and drawable then
+            if drawable < 0 then
+                ClearPedProp(cache.ped, propId)
+            else
+                SetPedPropIndex(cache.ped, propId, drawable, texture, true)
+            end
+        end
+    end
+
+    return client.getPedAppearance(cache.ped)
+end
+client.applyClothingItem = applyClothingItem
 
 local function removeClothes(typeClothes)
     local dataClothes = constants.DATA_CLOTHES[typeClothes]

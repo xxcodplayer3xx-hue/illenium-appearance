@@ -1,6 +1,50 @@
 local outfitCache = {}
 local uniformCache = {}
 
+local function playerHasClothingItem(src, itemName)
+    if GetResourceState("ox_inventory") == "started" then
+        return exports.ox_inventory:GetItemCount(src, itemName) > 0
+    end
+
+    if Framework.QBCore() then
+        local QBCore = exports["qb-core"]:GetCoreObject()
+        local player = QBCore.Functions.GetPlayer(src)
+        return player and player.Functions.GetItemByName(itemName) ~= nil
+    end
+
+    if Framework.ESX() then
+        local ESX = exports["es_extended"]:getSharedObject()
+        local player = ESX.GetPlayerFromId(src)
+        local item = player and player.getInventoryItem(itemName)
+        return item and item.count > 0
+    end
+
+    return false
+end
+
+local function approveClothingItem(src, itemName)
+    if src <= 0 or type(itemName) ~= "string" then
+        return nil, "Invalid clothing item request."
+    end
+
+    local item = Config.ClothingItems[itemName]
+    if type(item) ~= "table" then
+        print(("[illenium-appearance] Refused unknown clothing item %s for %s"):format(itemName, tostring(src)))
+        return nil, "This clothing item is not configured."
+    end
+
+    if not playerHasClothingItem(src, itemName) then
+        print(("[illenium-appearance] Refused clothing item %s for %s: item not owned"):format(itemName, tostring(src)))
+        return nil, "You do not have this clothing item."
+    end
+
+    return {
+        label = item.label or itemName,
+        components = item.components or {},
+        props = item.props or {}
+    }
+end
+
 local function getMoneyForShop(shopType)
     local money = 0
     if shopType == "clothing" then
@@ -91,6 +135,30 @@ end)
 lib.callback.register("illenium-appearance:server:getAppearance", function(source, model)
     local citizenID = Framework.GetPlayerID(source)
     return Framework.GetAppearance(citizenID, model)
+end)
+
+lib.callback.register("illenium-appearance:server:getClothingItem", function(source, itemName)
+    local item, errorMessage = approveClothingItem(source, itemName)
+    if not item then
+        return { ok = false, error = errorMessage }
+    end
+
+    return { ok = true, item = item }
+end)
+
+RegisterNetEvent("illenium-appearance:server:useClothingItem", function(itemName)
+    local src = source
+    local item, errorMessage = approveClothingItem(src, itemName)
+    if not item then
+        TriggerClientEvent("illenium-appearance:client:customNotify", src, {
+            title = "Clothing item refused",
+            description = errorMessage,
+            type = "error"
+        })
+        return
+    end
+
+    TriggerClientEvent("illenium-appearance:client:useClothingItem", src, itemName, item)
 end)
 
 lib.callback.register("illenium-appearance:server:hasMoney", function(source, shopType)
@@ -299,6 +367,44 @@ end)
 RegisterNetEvent("illenium-appearance:server:ResetRoutingBucket", function()
     local src = source
     SetPlayerRoutingBucket(src, 0)
+end)
+
+CreateThread(function()
+    Wait(1000)
+
+    if Framework.QBCore() then
+        local QBCore = exports["qb-core"]:GetCoreObject()
+        for itemName in pairs(Config.ClothingItems or {}) do
+            QBCore.Functions.CreateUseableItem(itemName, function(src)
+                local item, errorMessage = approveClothingItem(src, itemName)
+                if not item then
+                    TriggerClientEvent("illenium-appearance:client:customNotify", src, {
+                        title = "Clothing item refused",
+                        description = errorMessage,
+                        type = "error"
+                    })
+                    return
+                end
+                TriggerClientEvent("illenium-appearance:client:useClothingItem", src, itemName, item)
+            end)
+        end
+    elseif Framework.ESX() then
+        local ESX = exports["es_extended"]:getSharedObject()
+        for itemName in pairs(Config.ClothingItems or {}) do
+            ESX.RegisterUsableItem(itemName, function(src)
+                local item, errorMessage = approveClothingItem(src, itemName)
+                if not item then
+                    TriggerClientEvent("illenium-appearance:client:customNotify", src, {
+                        title = "Clothing item refused",
+                        description = errorMessage,
+                        type = "error"
+                    })
+                    return
+                end
+                TriggerClientEvent("illenium-appearance:client:useClothingItem", src, itemName, item)
+            end)
+        end
+    end
 end)
 
 if Config.EnablePedMenu then
