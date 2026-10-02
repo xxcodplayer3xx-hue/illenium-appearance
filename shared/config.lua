@@ -44,18 +44,11 @@ Config.NearestShopBlipUpdateDelay = 10000
 
 Config.InvincibleDuringCustomization = true
 
--- Clothing catalog images are loaded from this resource path. Add your PNG/JPG files there.
--- Component image format: component_<componentId>_<drawable>_0.png
--- Prop image format: prop_<propId>_<drawable>_0.png
-Config.ClothingImagePath = "../images/clothing"
-Config.ClothingItemImages = {}
-
 -- Add inventory-wearable clothing here. The table key is the inventory item name.
 -- The client only applies definitions from this server-owned table.
 Config.ClothingItems = {
     -- ["custom_hoodie"] = {
     --     label = "Custom Hoodie",
-    --     image = "../images/clothing/custom_hoodie.png",
     --     components = {
     --         { component_id = 11, drawable = 42, texture = 0 },
     --     },

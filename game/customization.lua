@@ -247,10 +247,6 @@ local function getHairSettings(ped)
 end
 client.getHairSettings = getHairSettings
 
-local function getCatalogImage(prefix, itemId, drawableId)
-    return string.format("%s/%s_%s_%s_0.png", Config.ClothingImagePath, prefix, itemId, drawableId)
-end
-
 local function getClothingCatalog(ped)
     local catalog = {
         components = {},
@@ -266,8 +262,6 @@ local function getClothingCatalog(ped)
         for drawableId = 0, drawableCount - 1 do
             componentItems[#componentItems + 1] = {
                 drawable = drawableId,
-                textureCount = GetNumberOfPedTextureVariations(ped, componentId, drawableId),
-                image = Config.ClothingItemImages[string.format("component:%s:%s:0", componentId, drawableId)] or getCatalogImage("component", componentId, drawableId),
                 label = string.format("Style %03d", drawableId)
             }
         end
@@ -284,8 +278,6 @@ local function getClothingCatalog(ped)
         local propItems = {
             {
                 drawable = -1,
-                textureCount = 0,
-                image = nil,
                 label = "Remove"
             }
         }
@@ -293,8 +285,6 @@ local function getClothingCatalog(ped)
         for drawableId = 0, drawableCount - 1 do
             propItems[#propItems + 1] = {
                 drawable = drawableId,
-                textureCount = GetNumberOfPedPropTextureVariations(ped, propId, drawableId),
-                image = Config.ClothingItemImages[string.format("prop:%s:%s:0", propId, drawableId)] or getCatalogImage("prop", propId, drawableId),
                 label = string.format("Style %03d", drawableId)
             }
         end
@@ -311,7 +301,6 @@ local function getClothingCatalog(ped)
                 item = itemName,
                 label = item.label or itemName,
                 description = item.description,
-                image = item.image,
                 components = item.components or {},
                 props = item.props or {}
             }
