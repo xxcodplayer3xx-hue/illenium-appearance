@@ -1,5 +1,31 @@
 local client = client
 local reloadSkinTimer = GetGameTimer()
+local clothingShopOpen = false
+
+--- Set whether qs-inventory should pause its clothing loop
+--- @param isClothing boolean True while the clothing editor is open
+local function setQsInventoryClothingState(isClothing)
+    if GetResourceState("qs-inventory") == "started" then
+        exports["qs-inventory"]:setInClothing(isClothing)
+    end
+end
+
+--- Close the active clothing editor and resume qs-inventory
+local function closeClothingShop()
+    if clothingShopOpen then
+        client.exitPlayerCustomization()
+    else
+        setQsInventoryClothingState(false)
+    end
+end
+
+RegisterNetEvent("openClothingStore", function()
+    setQsInventoryClothingState(true)
+    TriggerEvent("illenium-appearance:client:openClothingShopMenu")
+end)
+
+RegisterNetEvent("closeClothingStore", closeClothingShop)
+RegisterNetEvent("illenium-appearance:client:closeClothingShop", closeClothingShop)
 
 local function LoadPlayerUniform(reset)
     if reset then
@@ -81,6 +107,13 @@ AddEventHandler("onResourceStart", function(resource)
     end
 end)
 
+AddEventHandler("onResourceStop", function(resource)
+    if resource == GetCurrentResourceName() then
+        clothingShopOpen = false
+        setQsInventoryClothingState(false)
+    end
+end)
+
 local function getNewCharacterConfig()
     local config = GetDefaultConfig()
     config.enableExit   = false
@@ -126,8 +159,13 @@ function InitializeCharacter(gender, onSubmit, onCancel)
 end
 
 function OpenShop(config, isPedMenu, shopType)
+    local isClothingShop = shopType == "clothing"
+
     lib.callback("illenium-appearance:server:hasMoney", false, function(hasMoney, money)
         if not hasMoney and not isPedMenu then
+            if isClothingShop then
+                setQsInventoryClothingState(false)
+            end
             lib.notify({
                 title = "Cannot Enter Shop",
                 description = "Not enough cash. Need $" .. money,
@@ -137,7 +175,17 @@ function OpenShop(config, isPedMenu, shopType)
             return
         end
 
+        clothingShopOpen = isClothingShop
+        if isClothingShop then
+            setQsInventoryClothingState(true)
+        end
+
         client.startPlayerCustomization(function(appearance)
+            if isClothingShop then
+                clothingShopOpen = false
+                setQsInventoryClothingState(false)
+            end
+
             if appearance then
                 if not isPedMenu then
                     TriggerServerEvent("illenium-appearance:server:chargeCustomer", shopType)
@@ -157,6 +205,8 @@ function OpenShop(config, isPedMenu, shopType)
 end
 
 local function OpenClothingShop(isPedMenu)
+    setQsInventoryClothingState(true)
+
     local config = GetDefaultConfig()
     config.components = true
     config.props = true
